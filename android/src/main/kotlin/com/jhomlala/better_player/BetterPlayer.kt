@@ -544,19 +544,30 @@ internal class BetterPlayer(
     }
 
     fun setTrackParameters(width: Int, height: Int, bitrate: Int) {
-        val parametersBuilder = trackSelector.buildUponParameters()
+        // Obteniendo los parámetros actuales del TrackSelector
+        val currentParameters = trackSelector.parameters
+        val builder = currentParameters.buildUpon()
+
+        // Configurando el tamaño máximo de video si se especifica
         if (width != 0 && height != 0) {
-            parametersBuilder.setMaxVideoSize(width, height)
+            builder.setMaxVideoSize(width, height)
         }
+
+        // Configurando la tasa de bits máxima si se especifica
         if (bitrate != 0) {
-            parametersBuilder.setMaxVideoBitrate(bitrate)
+            builder.setMaxVideoBitrate(bitrate)
         }
+
+        // Si no se especifican restricciones, limpiar las limitaciones y restablecer los valores predeterminados
         if (width == 0 && height == 0 && bitrate == 0) {
-            parametersBuilder.clearVideoSizeConstraints()
-            parametersBuilder.setMaxVideoBitrate(Int.MAX_VALUE)
+            builder.clearVideoSizeConstraints()
+            builder.setMaxVideoBitrate(Int.MAX_VALUE)
         }
-        trackSelector.setParameters(parametersBuilder)
+
+        // Aplicar los parámetros actualizados al TrackSelector
+        trackSelector.parameters = builder.build()
     }
+
 
     fun seekTo(location: Int) {
         exoPlayer?.seekTo(location.toLong())
